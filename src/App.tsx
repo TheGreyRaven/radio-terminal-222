@@ -1,11 +1,4 @@
-import {
-  Lines,
-  Terminal,
-  TextLine,
-  textLine,
-  textWord,
-  useEventQueue,
-} from "crt-terminal";
+import { Lines, Terminal, TextLine, textLine, textWord, useEventQueue } from "crt-terminal";
 import { useEffect } from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -51,7 +44,7 @@ const HANDLE_LOGIN = async (
           textLine({
             words: [
               textWord({
-                characters: `Доступные команды:\n> help\n> ls\n> play\n> clear`,
+                characters: `Доступные команды:\n> help - Показывает справку\n> ls - Список файлов\n> play <file> - Воспроизводит файл\n> clear - Очищает консоль`,
               }),
             ],
           }),
@@ -64,7 +57,7 @@ const HANDLE_LOGIN = async (
           textLine({
             words: [
               textWord({
-                characters: `radio.mp3`,
+                characters: `latest-broadcast.m3u`,
               }),
             ],
           }),
@@ -106,6 +99,41 @@ const HANDLE_LOGIN = async (
   };
 
   lock(true);
+
+  const splitCommand = command.split(" ");
+  if (splitCommand[0] === "play") {
+    if (splitCommand.length !== 2) {
+      print([
+        textLine({
+          words: [
+            textWord({
+              characters: `Недействительным аргумент`,
+            }),
+          ],
+        }),
+      ]);
+      lock(false);
+      return;
+    }
+
+    if (splitCommand[1] === "latest-broadcast.m3u") {
+      AVAILABLE_COMMANDS.play.func();
+      return;
+    } else {
+      print([
+        textLine({
+          words: [
+            textWord({
+              characters: `Неизвестный файл`,
+            }),
+          ],
+        }),
+      ]);
+      lock(false);
+      return;
+    }
+  }
+
   if (command in AVAILABLE_COMMANDS) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
